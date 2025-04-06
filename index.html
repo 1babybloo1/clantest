@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Poxel Clan Board</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #a855f7;
+            --dark-bg: #0f172a;
+            --darker-bg: #0c1222;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://res.cloudinary.com/djttn4xvk/image/upload/v1742233490/image_2025-03-17_174448412_z7zjdy.png') no-repeat center center;
+            background-size: cover;
+            opacity: 0.03;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .site-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .site-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+        }
+
+        .featured-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .search-input {
+            padding: 1rem 1.5rem 1rem 3rem;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 9999px;
+            background-color: rgba(15, 23, 42, 0.7);
+            color: var(--text-primary);
+            font-size: 1rem;
+            width: 100%;
+            max-width: 500px;
+            outline: none;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(8px);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: calc(50% - 230px);
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4), 0 8px 10px -6px rgba(99, 102, 241, 0.3);
+        }
+
+        .card a {
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .card:hover .card-image {
+            transform: scale(1.05);
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-title img {
+            width: 28px;
+            height: 28px;
+            margin-right: 0.75rem;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+
+        .card-title h3 {
+            color: var(--text-primary);
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .card-description {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .card-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 1rem;
+        }
+
+        .online-count {
+            display: flex;
+            align-items: center;
+        }
+
+        .status-dot-open {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success);
+            margin-right: 0.5rem;
+            position: relative;
+        }
+
+        .status-dot-open::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background-color: var(--success);
+            opacity: 0.3;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+        }
+
+        .status-dot-requests {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--warning);
+            margin-right: 0.5rem;
+        }
+
+        .status-dot-closed {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--gray);
+            margin-right: 0.5rem;
+        }
+
+        .new-tag {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            z-index: 2;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .date-added {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .footer {
+            background-color: var(--darker-bg);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .footer-right {
+                text-align: center !important;
+            }
+        }
+
+        .footer-left p {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .glowing-image-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glowing-image {
+            height: 80px;
+            width: auto;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6));
+        }
+
+        .footer-right {
+            text-align: right;
+        }
+
+        .footer-right p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .empty-results {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 4rem 0;
+            color: var(--text-muted);
+        }
+
+        .empty-results i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-results p {
+            font-size: 1.25rem;
+        }
+
+        /* Button styling for empty links */
+        .card a.no-link {
+            cursor: default;
+        }
+
+        .join-button {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1.25rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .join-button:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .join-button i {
+            margin-left: 0.5rem;
+        }
+
+        .closed-button {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.5rem 1.25rem;
+            background-color: var(--gray);
+            color: white;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        /* Submit Clan Button */
+        .submit-clan-button {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 0.85rem 1.5rem;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 9999px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 8px 15px rgba(99, 102, 241, 0.4);
+            transition: all 0.3s ease;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            border: none;
+            cursor: pointer;
+        }
+
+        .submit-clan-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .submit-clan-button i {
+            margin-right: 0.75rem;
+            font-size: 1.1rem;
+        }
+
+        @media (max-width: 768px) {
+            .submit-clan-button {
+                bottom: 1.5rem;
+                right: 1.5rem;
+                padding: 0.75rem 1.25rem;
+                font-size: 0.9rem;
+            }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1 class="site-title">Poxel Clan Board</h1>
+        </header>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search for a clan by name or description...">
+        </div>
+
+        <h2 class="featured-title">Trending Clans</h2>
+
+        <div class="grid" id="clansGrid">
+            <!-- Clan cards will be dynamically inserted here -->
+        </div>
+    </div>
+
+    <!-- Submit Clan Button -->
+    <a href="clanselect.html" class="submit-clan-button">
+        <i class="fas fa-plus"></i>
+        Submit Clan
+    </a>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <p>Powered by</p>
+            </div>
+            <div class="footer-center">
+                <div class="glowing-image-container">
+                    <img src="https://res.cloudinary.com/djttn4xvk/image/upload/v1742231704/image_2025-03-17_171503090_xlt1qv.png"
+                        alt="Powered by Logo" class="glowing-image">
+                </div>
+            </div>
+            <div class="footer-right">
+                <p>Copyright &copy; babybloo 2024. All rights reserved.</p>
+                <p>WEBSITE MADE BY BABYBLOO </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const clansGrid = document.getElementById('clansGrid');
+        const searchInput = document.getElementById('searchInput');
+
+        const clans = [{
+                id: 1,
+                name: "MYTH",
+                logo: "https://res.cloudinary.com/djttn4xvk/image/upload/v1742231704/image_2025-03-17_171503090_xlt1qv.png",
+                description: "Myth is the one of the most prestigious and innovative clans out there. Myth is certainly a great pick to join! Master your talent and climb your way to the top of the leaderboard! MYTH ON TOP!",
+                status: "Closed Clan",
+                link: "",
+                coverImage: "https://res.cloudinary.com/djttn4xvk/image/upload/v1742231704/image_2025-03-17_171503090_xlt1qv.png",
+                dateAdded: new Date("2025-03-13"),
+                isNew: false
+            },
+            {
+                id: 2,
+                name: "SSL",
+                logo: "https://res.cloudinary.com/djttn4xvk/image/upload/v1742231812/image_2025-03-17_171650661_lpdtm0.png",
+                description: "An original clan made by Ssslick back in the good ol' days! This clan is for developers and top tier goats!",
+                status: "Closed Clan",
+                link: "",
+                coverImage: "https://res.cloudinary.com/djttn4xvk/image/upload/v1742231805/image_2025-03-17_171643136_ker0vn.png",
+                dateAdded: new Date("2025-03-15"),
+                isNew: false
+            },
+            {
+                id: 3,
+                name: "ONI",
+                logo: "https://res.cloudinary.com/djttn4xvk/image/upload/v1742231865/image_2025-03-17_171737081_gfamhp.png",
+                description: "Another great clan! Take this place as an opportunity to thrive, master your skill in Poxel!",
+                status: "Available for Requests (Includes Requirements)",
+                link: "https://discord.gg/7NH6t4NXJN",
+                coverImage: "https://res.cloudinary.com/djttn4xvk/image/upload/v1742231865/image_2025-03-17_171737081_gfamhp.png",
+                dateAdded: new Date("2025-03-16"),
+                isNew: true
+            },
+            {
+                id: 4,
+                name: "LOVE",
+                logo: "https://res.cloudinary.com/djttn4xvk/image/upload/v1742403704/image_2025-03-19_170121296_rzyhyk.png",
+                description: "An amazing clan made by the almighty Julink. This clan is a place to spread the love!",
+                status: "Open Clan",
+                link: "",
+                coverImage: "https://res.cloudinary.com/djttn4xvk/image/upload/v1742403303/image_2025-03-19_165500845_lnxxha.png",
+                dateAdded: new Date("2025-03-19"),
+                isNew: true
+            },
+            {
+                id: 5,
+                name: "PHOENIX",
+                logo: "https://res.cloudinary.com/djttn4xvk/image/upload/v1743766122/lataus_3_e9gk5l.jpg",
+                description: "Theres no other clan that describes The Sky is the limit better than this one",
+                status: "Available for Requests (Includes Requirements)",
+                link: "https://discord.gg/TMdQ524VGD",
+                coverImage: "https://res.cloudinary.com/djttn4xvk/image/upload/v1743766122/lataus_3_e9gk5l.jpg",
+                dateAdded: new Date("2025-04-04"),
+                isNew: true
+            },
+        ];
+
+        function isNewClan(dateAdded) {
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            return dateAdded > oneWeekAgo;
+        }
+
+        function formatRelativeDate(date) {
+            const now = new Date();
+            const diffInDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+
+            if (diffInDays === 0) {
+                return "Today";
+            } else if (diffInDays === 1) {
+                return "Yesterday";
+            } else if (diffInDays < 7) {
+                return `${diffInDays} days ago`;
+            } else {
+                return `${date.toLocaleDateString()}`;
+            }
+        }
+
+        function getStatusDotClass(status) {
+            if (status === "Open Clan") {
+                return "status-dot-open";
+            } else if (status === "Available for Requests (Includes Requirements)") {
+                return "status-dot-requests";
+            } else {
+                return "status-dot-closed";
+            }
+        }
+
+        function getButtonHTML(clan) {
+            if (clan.status === "Closed Clan") {
+                return `<div class="closed-button">Closed <i class="fas fa-lock"></i></div>`;
+            } else if (clan.link) {
+                return `<div class="join-button">Join Now <i class="fas fa-arrow-right"></i></div>`;
+            } else {
+                return '';
+            }
+        }
+
+        function createClanCard(clan) {
+            const isNew = isNewClan(clan.dateAdded);
+            const hasLink = clan.link && clan.link.trim() !== '';
+
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.setAttribute('data-status', clan.status);
+            card.setAttribute('data-date', clan.dateAdded.getTime());
+            card.setAttribute('data-new', isNew);
+
+            let cardHTML = `
+                <a href="${hasLink ? clan.link : '#'}" ${!hasLink ? 'class="no-link"' : ''} ${!hasLink ? 'onclick="event.preventDefault()"' : ''}>
+                    ${isNew ? '<div class="new-tag">NEW</div>' : ''}
+                    <img class="card-image" src="${clan.coverImage}" alt="${clan.name}">
+                    <div class="card-content">
+                        <div class="card-title">
+                            <img src="${clan.logo}" alt="${clan.name} logo">
+                            <h3>${clan.name}</h3>
+                        </div>
+                        <div class="card-description">
+                            ${clan.description}
+                        </div>
+                        ${getButtonHTML(clan)}
+                        <div class="card-stats">
+                            <div class="online-count">
+                                <div class="${getStatusDotClass(clan.status)}"></div>
+                                ${clan.status}
+                            </div>
+                            <div class="date-added">Added: ${formatRelativeDate(clan.dateAdded)}</div>
+                        </div>
+                    </div>
+                </a>
+            `;
+
+            card.innerHTML = cardHTML;
+            return card;
+        }
+
+        function renderClans(searchTerm = '') {
+            clansGrid.innerHTML = '';
+
+            const filteredClans = clans.filter(clan =>
+                clan.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                clan.description.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            if (filteredClans.length === 0) {
+                const emptyMessage = document.createElement('div');
+                emptyMessage.className = 'empty-results';
+                emptyMessage.innerHTML = `
+                    <i class="fas fa-search"></i>
+                    <p>No clans match your search</p>
+                `;
+                clansGrid.appendChild(emptyMessage);
+                return;
+            }
+
+            filteredClans.forEach(clan => {
+                const card = createClanCard(clan);
+                clansGrid.appendChild(card);
+            });
+        }
+
+        renderClans();
+
+        searchInput.addEventListener('input', () => {
+            renderClans(searchInput.value);
+        });
+    </script>
+    // Add this script at the end of your index.html file, before the closing </body> tag
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Find the container where clan cards will be added
+        const clanCardsContainer = document.querySelector('.clan-cards-container'); // Update this selector to match your HTML
+        
+        if (!clanCardsContainer) {
+            console.error('Clan cards container not found');
+            return;
+        }
+        
+        // Load clans from localStorage
+        const clans = JSON.parse(localStorage.getItem('poxelClans') || '[]');
+        
+        // If there are no clans yet, don't do anything
+        if (clans.length === 0) return;
+        
+        // Function to get the appropriate status dot class
+        function getStatusDotClass(status) {
+            if (status === "Open Clan") {
+                return "status-dot-open";
+            } else if (status === "Available for Requests (Includes Requirements)") {
+                return "status-dot-requests";
+            } else {
+                return "status-dot-closed";
+            }
+        }
+        
+        // Generate HTML for each clan
+        clans.forEach(clan => {
+            // Create clan card element
+            const clanCard = document.createElement('div');
+            clanCard.className = 'clan-card';
+            clanCard.dataset.id = clan.id;
+            
+            // Build the HTML for the clan card
+            clanCard.innerHTML = `
+                <img class="clan-card-image" src="${clan.bannerUrl}" alt="${clan.name} Banner">
+                <div class="clan-card-content">
+                    <div class="clan-card-title">
+                        <img src="${clan.logoUrl}" alt="${clan.name} Logo">
+                        <h3>${clan.name}</h3>
+                    </div>
+                    <div class="clan-card-description">${clan.description}</div>
+                    <div class="clan-card-stats">
+                        <div class="clan-online-count">
+                            <div class="${getStatusDotClass(clan.status)}"></div>
+                            <span>${clan.status}</span>
+                        </div>
+                        <div class="clan-date-added">Added: ${clan.dateAdded}</div>
+                    </div>
+                </div>
+                ${clan.discordLink ? `<a href="${clan.discordLink}" class="clan-join-button" target="_blank">Join Discord</a>` : ''}
+            `;
+            
+            // Add the clan card to the container
+            clanCardsContainer.appendChild(clanCard);
+        });
+    });
+</script>
+</body>
+
+</html>
