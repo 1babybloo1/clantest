@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Your Clan - Poxel Clan Board</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary-color: #a855f7;
+            --dark-bg: #0f172a;
+            --darker-bg: #0c1222;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray: #64748b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://res.cloudinary.com/djttn4xvk/image/upload/v1742233490/image_2025-03-17_174448412_z7zjdy.png') no-repeat center center;
+            background-size: cover;
+            opacity: 0.03;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 2rem;
+            flex: 1;
+        }
+
+        header {
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .site-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .site-title::after {
+            content: '';
+            position: absolute;
+            bottom: -0.5rem;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 2px;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .form-container {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 0.5rem;
+            background-color: rgba(15, 23, 42, 0.7);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .image-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed rgba(99, 102, 241, 0.3);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: rgba(15, 23, 42, 0.5);
+            position: relative;
+        }
+
+        .image-upload-container:hover {
+            border-color: var(--primary-color);
+            background-color: rgba(15, 23, 42, 0.7);
+        }
+
+        .image-upload-container i {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .image-upload-text {
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .image-upload-note {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+        }
+
+        .image-preview {
+            width: 100%;
+            margin-top: 1rem;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            display: none;
+            position: relative;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background-color: rgba(15, 23, 42, 0.7);
+            color: var(--danger);
+            border: none;
+            border-radius: 9999px;
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .remove-image:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .form-submit {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .form-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .form-submit:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .form-url-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid rgba(99, 102, 241, 0.2);
+            border-radius: 0.5rem;
+            background-color: rgba(15, 23, 42, 0.7);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .switch-input-type {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .loader {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--text-primary);
+            animation: spin 1s ease infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .preview-card {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            margin-top: 3rem;
+            display: none;
+        }
+
+        .preview-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: var(--text-secondary);
+        }
+
+        .preview-card-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .preview-card-content {
+            padding: 1.5rem;
+        }
+
+        .preview-card-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .preview-card-title img {
+            width: 28px;
+            height: 28px;
+            margin-right: 0.75rem;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary-color);
+        }
+
+        .preview-card-title h3 {
+            color: var(--text-primary);
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .preview-card-description {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .preview-card-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 1rem;
+        }
+
+        .preview-online-count {
+            display: flex;
+            align-items: center;
+        }
+
+        .status-dot-open {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success);
+            margin-right: 0.5rem;
+            position: relative;
+        }
+
+        .status-dot-open::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background-color: var(--success);
+            opacity: 0.3;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.3;
+            }
+        }
+
+        .status-dot-requests {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--warning);
+            margin-right: 0.5rem;
+        }
+
+        .status-dot-closed {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--gray);
+            margin-right: 0.5rem;
+        }
+
+        .preview-date-added {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .nav-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--secondary-color);
+        }
+
+        .nav-link i {
+            margin-right: 0.5rem;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .alert-success {
+            background-color: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background-color: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .footer {
+            background-color: var(--darker-bg);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 2rem 0;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        .footer-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .footer-content {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+            
+            .footer-right {
+                text-align: center !important;
+            }
+        }
+
+        .footer-left p {
+            margin: 0;
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .glowing-image-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .glowing-image {
+            height: 80px;
+            width: auto;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.6));
+        }
+
+        .footer-right {
+            text-align: right;
+        }
+
+        .footer-right p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1 class="site-title">Poxel Clan Board</h1>
+        </header>
+
+        <a href="index.html" class="nav-link"><i class="fas fa-arrow-left"></i> Back to Clan Board</a>
+
+        <h2 class="page-title">Add Your Clan</h2>
+
+        <div id="alertBox" class="alert">
+            <span id="alertMessage"></span>
+        </div>
+
+        <div class="form-container">
+            <form id="clanForm">
+                <div class="form-group">
+                    <label for="clanName" class="form-label">Clan Name</label>
+                    <input type="text" id="clanName" name="clanName" class="form-input" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="clanDescription" class="form-label">Clan Description</label>
+                    <textarea id="clanDescription" name="clanDescription" class="form-textarea" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Clan Logo (Profile Image)</label>
+                    <div id="logoUploadContainer" class="image-upload-container">
+                        <input type="file" id="logoFileInput" style="display: none;" accept="image/*">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p class="image-upload-text">Drag & drop your logo here or click to browse</p>
+                        <p class="image-upload-note">Recommended size: Square image (at least 100x100px)</p>
+                    </div>
+                    <button type="button" id="switchLogoInputType" class="switch-input-type">Or use an image URL instead</button>
+                    <input type="url" id="logoUrlInput" class="form-url-input" placeholder="Enter logo image URL">
+                    <div id="logoPreview" class="image-preview">
+                        <img src="" alt="Logo Preview">
+                        <button type="button" class="remove-image" id="removeLogoImage"><i class="fas fa-times"></i></button>
+                    </div>
+                    <input type="hidden" id="logoCloudinaryUrl" name="logoCloudinaryUrl">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Clan Banner Image</label>
+                    <div id="bannerUploadContainer" class="image-upload-container">
+                        <input type="file" id="bannerFileInput" style="display: none;" accept="image/*">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        <p class="image-upload-text">Drag & drop your banner here or click to browse</p>
+                        <p class="image-upload-note">Recommended size: 1280x360px (16:9 ratio)</p>
+                    </div>
+                    <button type="button" id="switchBannerInputType" class="switch-input-type">Or use an image URL instead</button>
+                    <input type="url" id="bannerUrlInput" class="form-url-input" placeholder="Enter banner image URL">
+                    <div id="bannerPreview" class="image-preview">
+                        <img src="" alt="Banner Preview">
+                        <button type="button" class="remove-image" id="removeBannerImage"><i class="fas fa-times"></i></button>
+                    </div>
+                    <input type="hidden" id="bannerCloudinaryUrl" name="bannerCloudinaryUrl">
+                </div>
+
+                <div class="form-group">
+                    <label for="clanStatus" class="form-label">Clan Status</label>
+                    <select id="clanStatus" name="clanStatus" class="form-select" required>
+                        <option value="">Select Status</option>
+                        <option value="Open Clan">Open Clan</option>
+                        <option value="Available for Requests (Includes Requirements)">Available for Requests (Includes Requirements)</option>
+                        <option value="Closed Clan">Closed Clan</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="clanLink" class="form-label">Discord Invite Link (Optional)</label>
+                    <input type="url" id="clanLink" name="clanLink" class="form-input" placeholder="https://discord.gg/...">
+                </div>
+
+                <button type="submit" id="submitButton" class="form-submit">
+                    <span>Submit Clan</span>
+                    <div class="loader" id="submitLoader"></div>
+                </button>
+            </form>
+        </div>
+
+        <div class="preview-card" id="previewCard">
+            <h3 class="preview-title">Preview Your Clan Card</h3>
+            <img id="previewBanner" class="preview-card-image" src="" alt="Banner Preview">
+            <div class="preview-card-content">
+                <div class="preview-card-title">
+                    <img id="previewLogo" src="" alt="Logo Preview">
+                    <h3 id="previewName"></h3>
+                </div>
+                <div class="preview-card-description" id="previewDescription"></div>
+                <div class="preview-card-stats">
+                    <div class="preview-online-count">
+                        <div id="previewStatusDot" class="status-dot-open"></div>
+                        <span id="previewStatus"></span>
+                    </div>
+                    <div class="preview-date-added">Added: Today</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <p>Powered by</p>
+            </div>
+            <div class="footer-center">
+                <div class="glowing-image-container">
+                    <img src="https://res.cloudinary.com/djttn4xvk/image/upload/v1742231704/image_2025-03-17_171503090_xlt1qv.png"
+                        alt="Powered by Logo" class="glowing-image">
+                </div>
+            </div>
+            <div class="footer-right">
+                <p>Copyright &copy; babybloo 2024. All rights reserved.</p>
+                <p>WEBSITE MADE BY BABYBLOO </p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // CloudinaryUploader object to handle images
+        class CloudinaryUploader {
+            constructor(cloudName, uploadPreset) {
+                this.cloudName = cloudName;
+                this.uploadPreset = uploadPreset;
+                this.uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
+            }
+
+            async uploadFile(file) {
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', this.uploadPreset);
+
+                try {
+                    const response = await fetch(this.uploadUrl, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Image upload failed');
+                    }
+
+                    const data = await response.json();
+                    return data.secure_url;
+                } catch (error) {
+                    console.error('Error uploading image:', error);
+                    throw error;
+                }
+            }
+
+            async uploadFromUrl(url) {
+                const formData = new FormData();
+                formData.append('file', url);
+                formData.append('upload_preset', this.uploadPreset);
+
+                try {
+                    const response = await fetch(this.uploadUrl, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Image upload failed');
+                    }
+
+                    const data = await response.json();
+                    return data.secure_url;
+                } catch (error) {
+                    console.error('Error uploading image from URL:', error);
+                    throw error;
+                }
+            }
+        }
+
+        // Form elements
+        const clanForm = document.getElementById('clanForm');
+        const clanNameInput = document.getElementById('clanName');
+        const clanDescriptionInput = document.getElementById('clanDescription');
+        const clanStatusSelect = document.getElementById('clanStatus');
+        const clanLinkInput = document.getElementById('clanLink');
+        const submitButton = document.getElementById('submitButton');
+        const submitLoader = document.getElementById('submitLoader');
+
+        // Logo elements
+        const logoUploadContainer = document.getElementById('logoUploadContainer');
+        const logoFileInput = document.getElementById('logoFileInput');
+        const logoUrlInput = document.getElementById('logoUrlInput');
+        const switchLogoInputType = document.getElementById('switchLogoInputType');
+        const logoPreview = document.getElementById('logoPreview');
+        const logoPreviewImg = logoPreview.querySelector('img');
+        const removeLogoImage = document.getElementById('removeLogoImage');
+        const logoCloudinaryUrl = document.getElementById('logoCloudinaryUrl');
+
+        // Banner elements
+        const bannerUploadContainer = document.getElementById('bannerUploadContainer');
+        const bannerFileInput = document.getElementById('bannerFileInput');
+        const bannerUrlInput = document.getElementById('bannerUrlInput');
+        const switchBannerInputType = document.getElementById('switchBannerInputType');
+        const bannerPreview = document.getElementById('bannerPreview');
+        const bannerPreviewImg = bannerPreview.querySelector('img');
+        const removeBannerImage = document.getElementById('removeBannerImage');
+        const bannerCloudinaryUrl = document.getElementById('bannerCloudinaryUrl');
+
+        // Preview elements
+        const previewCard = document.getElementById('previewCard');
+        const previewBanner = document.getElementById('previewBanner');
+        const previewLogo = document.getElementById('previewLogo');
+        const previewName = document.getElementById('previewName');
+        const previewDescription = document.getElementById('previewDescription');
+        const previewStatusDot = document.getElementById('previewStatusDot');
+        const previewStatus = document.getElementById('previewStatus');
+
+        // Alert elements
+        const alertBox = document.getElementById('alertBox');
+        const alertMessage = document.getElementById('alertMessage');
+
+        // Create CloudinaryUploader instance
+        // Note: You'll need to replace these with your actual Cloudinary credentials
+        const uploader = new CloudinaryUploader('djttn4xvk', 'ml_default');
+
+        // Helper functions
+        function showAlert(message, type) {
+            alertBox.className = `alert alert-${type}`;
+            alertMessage.textContent = message;
+            alertBox.style.display = 'block';
+            
+            // Auto hide after 5 seconds
+            setTimeout(() => {
+                alertBox.style.display = 'none';
+            }, 5000);
+        }
+
+        function getStatusDotClass(status) {
+            if (status === "Open Clan") {
+                return "status-dot-open";
+            } else if (status === "Available for Requests (Includes Requirements)") {
+                return "status-dot-requests";
+            } else {
+                return "status-dot-closed";
+            }
+        }
+
+        function updatePreview() {
+            const name = clanNameInput.value || 'Your Clan Name';
+            const description = clanDescriptionInput.value || 'Your clan description will appear here...';
+            const status = clanStatusSelect.value || 'Open Clan';
+            const logoUrl = logoPreviewImg.src || 'https://res.cloudinary.com/djttn4xvk/image/upload/v1742231704/image_2025-03-17_171503090_xlt1qv.png';
+            const bannerUrl = bannerPreviewImg.src || 'https://res.cloudinary.com/djttn4xvk/image/upload/v1742231704/image_2025-03-17_171503090_xlt1qv.png';
+            
+            previewName.textContent = name;
+            previewDescription.textContent = description;
+            previewLogo.src = logoUrl;
+            previewBanner.src = bannerUrl;
+            previewStatus.textContent = status;
+            
+            // Update status dot class
+            previewStatusDot.className = getStatusDotClass(status);
+            
+            // Show preview card
+            previewCard.style.display = 'block';
+        }
+
+        // Event listeners for logo upload
+        logoUploadContainer.addEventListener('click', () => {
+            logoFileInput.click();
+        });
+
+        logoUploadContainer.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            logoUploadContainer.style.borderColor = 'var(--primary-color)';
+        });
+
+        logoUploadContainer.addEventListener('dragleave', () => {
+            logoUploadContainer.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+        });
+
+        logoUploadContainer.addEventListener('drop', (e) => {
+            e.preventDefault();
+            logoUploadContainer.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+            
+            if (e.dataTransfer.files.length) {
+                const file = e.dataTransfer.files[0];
+                if (file.type.startsWith('image/')) {
+                    handleLogoFile(file);
+                } else {
+                    showAlert('Please upload an image file', 'error');
+                }
+            }
+        });
+
+        logoFileInput.addEventListener('change', () => {
+            if (logoFileInput.files.length) {
+                handleLogoFile(logoFileInput.files[0]);
+            }
+        });
+
+        switchLogoInputType.addEventListener('click', () => {
+            if (logoUrlInput.style.display === 'none' || logoUrlInput.style.display === '') {
+                logoUrlInput.style.display = 'block';
+                logoUploadContainer.style.display = 'none';
+                switchLogoInputType.textContent = 'Or upload from your device';
+            } else {
+                logoUrlInput.style.display = 'none';
+                logoUploadContainer.style.display = 'flex';
+                switchLogoInputType.textContent = 'Or use an image URL instead';
+            }
+        });
+
+        logoUrlInput.addEventListener('blur', async () => {
+            const url = logoUrlInput.value.trim();
+            if (url) {
+                try {
+                    // Preview the image first
+                    logoPreviewImg.src = url;
+                    logoPreview.style.display = 'block';
+                    updatePreview();
+                } catch (error) {
+                    showAlert('Invalid image URL', 'error');
+                }
+            }
+        });
+
+        removeLogoImage.addEventListener('click', () => {
+    logoPreview.style.display = 'none';
+    logoPreviewImg.src = '';
+    logoFileInput.value = '';
+    logoUrlInput.value = '';
+    logoCloudinaryUrl.value = '';
+    updatePreview();
+});
+
+async function handleLogoFile(file) {
+    // Create a preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        logoPreviewImg.src = e.target.result;
+        logoPreview.style.display = 'block';
+        updatePreview();
+    };
+    reader.readAsDataURL(file);
+}
+
+// Event listeners for banner upload
+bannerUploadContainer.addEventListener('click', () => {
+    bannerFileInput.click();
+});
+
+bannerUploadContainer.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    bannerUploadContainer.style.borderColor = 'var(--primary-color)';
+});
+
+bannerUploadContainer.addEventListener('dragleave', () => {
+    bannerUploadContainer.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+});
+
+bannerUploadContainer.addEventListener('drop', (e) => {
+    e.preventDefault();
+    bannerUploadContainer.style.borderColor = 'rgba(99, 102, 241, 0.3)';
+    
+    if (e.dataTransfer.files.length) {
+        const file = e.dataTransfer.files[0];
+        if (file.type.startsWith('image/')) {
+            handleBannerFile(file);
+        } else {
+            showAlert('Please upload an image file', 'error');
+        }
+    }
+});
+
+bannerFileInput.addEventListener('change', () => {
+    if (bannerFileInput.files.length) {
+        handleBannerFile(bannerFileInput.files[0]);
+    }
+});
+
+switchBannerInputType.addEventListener('click', () => {
+    if (bannerUrlInput.style.display === 'none' || bannerUrlInput.style.display === '') {
+        bannerUrlInput.style.display = 'block';
+        bannerUploadContainer.style.display = 'none';
+        switchBannerInputType.textContent = 'Or upload from your device';
+    } else {
+        bannerUrlInput.style.display = 'none';
+        bannerUploadContainer.style.display = 'flex';
+        switchBannerInputType.textContent = 'Or use an image URL instead';
+    }
+});
+
+bannerUrlInput.addEventListener('blur', async () => {
+    const url = bannerUrlInput.value.trim();
+    if (url) {
+        try {
+            // Preview the image first
+            bannerPreviewImg.src = url;
+            bannerPreview.style.display = 'block';
+            updatePreview();
+        } catch (error) {
+            showAlert('Invalid image URL', 'error');
+        }
+    }
+});
+
+removeBannerImage.addEventListener('click', () => {
+    bannerPreview.style.display = 'none';
+    bannerPreviewImg.src = '';
+    bannerFileInput.value = '';
+    bannerUrlInput.value = '';
+    bannerCloudinaryUrl.value = '';
+    updatePreview();
+});
+
+async function handleBannerFile(file) {
+    // Create a preview
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        bannerPreviewImg.src = e.target.result;
+        bannerPreview.style.display = 'block';
+        updatePreview();
+    };
+    reader.readAsDataURL(file);
+}
+
+// Form input event listeners for updating preview
+clanNameInput.addEventListener('input', updatePreview);
+clanDescriptionInput.addEventListener('input', updatePreview);
+clanStatusSelect.addEventListener('change', updatePreview);
+
+// Replace the form submission event listener with this updated version
+clanForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // Disable submit button and show loader
+    submitButton.disabled = true;
+    submitLoader.style.display = 'block';
+    submitButton.querySelector('span').style.display = 'none';
+    
+    try {
+        // Upload images to Cloudinary if they exist
+        let logoUrl = '';
+        let bannerUrl = '';
+        
+        if (logoPreviewImg.src && !logoPreviewImg.src.includes('cloudinary.com')) {
+            if (logoUrlInput.value && logoUrlInput.style.display !== 'none') {
+                logoUrl = await uploader.uploadFromUrl(logoUrlInput.value);
+            } else if (logoFileInput.files.length) {
+                logoUrl = await uploader.uploadFile(logoFileInput.files[0]);
+            }
+        } else if (logoPreviewImg.src) {
+            logoUrl = logoPreviewImg.src;
+        }
+        
+        if (bannerPreviewImg.src && !bannerPreviewImg.src.includes('cloudinary.com')) {
+            if (bannerUrlInput.value && bannerUrlInput.style.display !== 'none') {
+                bannerUrl = await uploader.uploadFromUrl(bannerUrlInput.value);
+            } else if (bannerFileInput.files.length) {
+                bannerUrl = await uploader.uploadFile(bannerFileInput.files[0]);
+            }
+        } else if (bannerPreviewImg.src) {
+            bannerUrl = bannerPreviewImg.src;
+        }
+        
+        // Create clan data object
+        const clanData = {
+            id: Date.now().toString(), // Generate a unique ID
+            name: clanNameInput.value,
+            description: clanDescriptionInput.value,
+            status: clanStatusSelect.value,
+            discordLink: clanLinkInput.value,
+            logoUrl: logoUrl || "https://res.cloudinary.com/djttn4xvk/image/upload/v1742231704/image_2025-03-17_171503090_xlt1qv.png",
+            bannerUrl: bannerUrl || "https://res.cloudinary.com/djttn4xvk/image/upload/v1742233490/image_2025-03-17_174448412_z7zjdy.png",
+            dateAdded: new Date().toLocaleDateString(),
+            memberCount: Math.floor(Math.random() * 100) + 5 // Random member count for demo
+        };
+        
+        // Get existing clans from localStorage
+        let clans = JSON.parse(localStorage.getItem('poxelClans') || '[]');
+        
+        // Add new clan to the array
+        clans.push(clanData);
+        
+        // Save updated clans back to localStorage
+        localStorage.setItem('poxelClans', JSON.stringify(clans));
+        
+        // Show success message
+        showAlert('Clan submitted successfully! Your clan has been added to the board.', 'success');
+        
+        // Reset form after submission
+        clanForm.reset();
+        logoPreview.style.display = 'none';
+        bannerPreview.style.display = 'none';
+        previewCard.style.display = 'none';
+        
+        // Redirect to clan board after 2 seconds
+        setTimeout(() => {
+            window.location.href = 'index.html';
+        }, 2000);
+        
+    } catch (error) {
+        console.error('Error submitting clan:', error);
+        showAlert('There was an error submitting your clan. Please try again.', 'error');
+    } finally {
+        // Re-enable submit button and hide loader
+        submitButton.disabled = false;
+        submitLoader.style.display = 'none';
+        submitButton.querySelector('span').style.display = 'block';
+    }
+});
+
+
+// Initialize preview
+updatePreview();
+</script>
+</body>
+</html>
