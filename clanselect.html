@@ -951,28 +951,9 @@ clanForm.addEventListener('submit', async (e) => {
     
     try {
         // Upload images to Cloudinary if they exist
-        let logoUrl = '';
-        let bannerUrl = '';
-        
-        if (logoPreviewImg.src && !logoPreviewImg.src.includes('cloudinary.com')) {
-            if (logoUrlInput.value && logoUrlInput.style.display !== 'none') {
-                logoUrl = await uploader.uploadFromUrl(logoUrlInput.value);
-            } else if (logoFileInput.files.length) {
-                logoUrl = await uploader.uploadFile(logoFileInput.files[0]);
-            }
-        } else if (logoPreviewImg.src) {
-            logoUrl = logoPreviewImg.src;
-        }
-        
-        if (bannerPreviewImg.src && !bannerPreviewImg.src.includes('cloudinary.com')) {
-            if (bannerUrlInput.value && bannerUrlInput.style.display !== 'none') {
-                bannerUrl = await uploader.uploadFromUrl(bannerUrlInput.value);
-            } else if (bannerFileInput.files.length) {
-                bannerUrl = await uploader.uploadFile(bannerFileInput.files[0]);
-            }
-        } else if (bannerPreviewImg.src) {
-            bannerUrl = bannerPreviewImg.src;
-        }
+// Skip Cloudinary and use the preview image URLs directly
+let logoUrl = logoPreviewImg.src || "https://res.cloudinary.com/djttn4xvk/image/upload/v1742231704/image_2025-03-17_171503090_xlt1qv.png";
+let bannerUrl = bannerPreviewImg.src || "https://res.cloudinary.com/djttn4xvk/image/upload/v1742233490/image_2025-03-17_174448412_z7zjdy.png";
         
         // Create clan data object
         const clanData = {
